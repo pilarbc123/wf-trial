@@ -92,11 +92,21 @@ process helloworld {
     """
 }
 
+process helloworld_tofile {
+    output:
+        path "output.txt"
+
+    script:
+
+    """
+    python -c "print('Hello world')" >> output.txt
+    """
+}
 // workflow module
 workflow pipeline {
     
     main:
-        helloworld()   
+        helloworld_tofile()   
         
 }
 
