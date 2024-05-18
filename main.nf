@@ -107,8 +107,6 @@ workflow {
 
     Pinguscript.ping_start(nextflow, workflow, params)
     
-    pipeline()
-
 }
 
 workflow.onComplete {
