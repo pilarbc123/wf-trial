@@ -83,33 +83,6 @@ process output {
     """
 }
 
-// Creates a new directory named after the sample alias and moves the ingress results
-// into it.
-process collectIngressResultsInDir {
-    label "wftemplate"
-    input:
-        // both inputs might be `OPTIONAL_FILE` --> stage in different sub-directories
-        // to avoid name collisions
-        tuple val(meta),
-            path(reads, stageAs: "reads/*"),
-            path(index, stageAs: "index/*"),
-            path(stats, stageAs: "stats/*")
-    output:
-        // use sub-dir to avoid name clashes (in the unlikely event of a sample alias
-        // being `reads` or `stats`)
-        path "out/*"
-    script:
-    String outdir = "out/${meta["alias"]}"
-    String metaJson = new JsonBuilder(meta).toPrettyString()
-    String reads = reads.fileName.name == OPTIONAL_FILE.name ? "" : reads
-    String index = index.fileName.name == OPTIONAL_FILE.name ? "" : index
-    String stats = stats.fileName.name == OPTIONAL_FILE.name ? "" : stats
-    """
-    mkdir -p $outdir
-    echo '$metaJson' > metamap.json
-    mv metamap.json $reads $stats $index $outdir
-    """
-}
 
 // workflow module
 workflow pipeline {
