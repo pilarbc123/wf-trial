@@ -58,14 +58,6 @@
                 }
             }
         },
-        "advanced_options": {
-            "title": "Advanced Options",
-            "type": "object",
-            "fa_icon": "far fa-question-circle",
-            "description": "Advanced options for configuring processes inside the workflow.",
-            "help_text": "These advanced options do not need to be changed for typical use, but allow fine tuning of workflows for users who want more control over the workflow.",
-            "properties": {}
-        },
         "misc": {
             "title": "Miscellaneous Options",
             "type": "object",
@@ -99,9 +91,6 @@
         },
         {
             "$ref": "#/definitions/output"
-        },
-        {
-            "$ref": "#/definitions/advanced_options"
         },
         {
             "$ref": "#/definitions/misc"
