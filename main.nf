@@ -87,7 +87,7 @@ process helloworld {
     
     script:
     """
-    python -c  "print('Hello world')"
+    helloworld.py
     
     """
 }
