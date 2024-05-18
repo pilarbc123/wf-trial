@@ -106,7 +106,7 @@ process helloworld_tofile {
 workflow pipeline {
     
     main:
-        helloworld_tofile()   
+        helloworld()   
         
 }
 
