@@ -87,9 +87,10 @@ process helloworld {
     
     script:
     """
-    echo 'Hello world!'
+    python helloworld.py
     """
 }
+
 // workflow module
 workflow pipeline {
     
