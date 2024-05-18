@@ -113,53 +113,18 @@ process collectIngressResultsInDir {
 
 // workflow module
 workflow pipeline {
-    take:
-        reads
+    
     main:
-        // fastq_ingress doesn't have the index; add one extra null for compatibility.
-        // We do not use variable name as assigning variable name with a tuple
-        // not matching (e.g. meta, bam, bai, stats <- [meta, bam, stats]) causes
-        // the workflow to crash.
-        reads = reads
-        .map{
-            it.size() == 4 ? it : [it[0], it[1], null, it[2]]
-        }
+        script:
 
-        client_fields = params.client_fields && file(params.client_fields).exists() ? file(params.client_fields) : OPTIONAL_FILE
-        software_versions = getVersions()
-        workflow_params = getParams()
+        """
+        echo 'Hello world!'
+        """
 
-        // get metadata and stats files, keeping them ordered (could do with transpose I suppose)
-        reads.multiMap{ meta, path, index, stats ->
-            meta: meta
-            stats: stats ?: OPTIONAL_FILE
-        }.set { for_report }
-        metadata = for_report.meta.collect()
-        // create a file list of the stats, and signal if its empty or not
-        stats = for_report.stats | ifEmpty(OPTIONAL_FILE) | collect | map { [it, it[0] == OPTIONAL_FILE] } 
- 
-        report = makeReport(
-            metadata,
-            stats,
-            client_fields,
-            software_versions,
-            workflow_params,
-            workflow.manifest.version
-        )
-        
-        // replace `null` with path to optional file
-        reads
-        | map { 
-            meta, path, index, stats ->
-            [ meta, path ?: OPTIONAL_FILE, index ?: OPTIONAL_FILE, stats ?: OPTIONAL_FILE ]
-        }
-        | collectIngressResultsInDir
     emit:
-        ingress_results = collectIngressResultsInDir.out
+        
         report
-        workflow_params
-        // TODO: use something more useful as telemetry
-        telemetry = workflow_params
+        
 }
 
 
@@ -168,72 +133,9 @@ WorkflowMain.initialise(workflow, params, log)
 workflow {
 
     Pinguscript.ping_start(nextflow, workflow, params)
+    
+    pipeline()
 
-    // demo mutateParam
-    if (params.containsKey("mutate_fastq")) {
-        CWUtil.mutateParam(params, "fastq", params.mutate_fastq)
-    }
-
-    def samples
-    if (params.fastq) {
-        samples = fastq_ingress([
-            "input":params.fastq,
-            "sample":params.sample,
-            "sample_sheet":params.sample_sheet,
-            "analyse_unclassified":params.analyse_unclassified,
-            "stats": params.wf.fastcat_stats,
-            "fastcat_extra_args": "",
-            "required_sample_types": [],
-            "watch_path": params.wf.watch_path,
-            "fastq_chunk": params.fastq_chunk,
-            "per_read_stats": params.wf.per_read_stats,
-        ])
-    } else {
-        // if we didn't get a `--fastq`, there must have been a `--bam` (as is codified
-        // by the schema)
-        samples = xam_ingress([
-            "input":params.bam,
-            "sample":params.sample,
-            "sample_sheet":params.sample_sheet,
-            "analyse_unclassified":params.analyse_unclassified,
-            "keep_unaligned": params.wf.keep_unaligned,
-            "stats": params.wf.bamstats,
-            "watch_path": params.wf.watch_path,
-            "return_fastq": params.wf.return_fastq,
-            "fastq_chunk": params.fastq_chunk,
-            "per_read_stats": params.wf.per_read_stats
-        ])
-    }
-
-    // group back the possible multiple fastqs from the chunking. In
-    // a "real" workflow this wouldn't be done immediately here and
-    // we'd do something more interesting first. Note that groupTuple
-    // will give us a file list of `[null]` for missing samples, reduce
-    // this back to `null`.
-    def decorate_samples
-    if (params.wf.return_fastq || params.fastq) {
-        decorate_samples = samples
-            .map {meta, fname, stats ->
-                [meta["group_key"], meta, fname, stats]}
-            .groupTuple()
-            .map { key, metas, fnames, statss ->
-                if (fnames[0] == null) {fnames = null}
-                // put all the group_indexes into a single list for safe keeping (mainly testing)
-                [
-                    metas[0] + ["group_index":  metas.collect{it["group_index"]}],
-                    fnames, statss[0]]
-            }
-    } else {
-        decorate_samples = samples
-    }
-
-    pipeline(decorate_samples)
-    pipeline.out.ingress_results
-        | map { [it, "${params.fastq ? "fastq" : "xam"}_ingress_results"] }
-        | concat (
-            pipeline.out.report.concat(pipeline.out.workflow_params)
-                | map { [it, null] })
-        | output
 }
 
 workflow.onComplete {
