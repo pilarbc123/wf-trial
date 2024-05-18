@@ -84,8 +84,7 @@ process output {
 }
 
 process helloworld {
-    output:
-        path "Iamworking.txt"
+    
     script:
     """
     echo 'Hello world!'
