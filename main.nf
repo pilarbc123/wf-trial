@@ -87,7 +87,7 @@ process helloworld {
     
     script:
     """
-    python bin/helloworld.py
+    helloworld
     
     """
 }
