@@ -83,20 +83,19 @@ process output {
     """
 }
 
-
+process helloworld {
+    output:
+        path "Iamworking.txt"
+    script:
+    """
+    echo 'Hello world!'
+    """
+}
 // workflow module
 workflow pipeline {
     
     main:
-        script:
-
-        """
-        echo 'Hello world!'
-        """
-
-    emit:
-        
-        report
+        helloworld()   
         
 }
 
@@ -106,7 +105,7 @@ WorkflowMain.initialise(workflow, params, log)
 workflow {
 
     Pinguscript.ping_start(nextflow, workflow, params)
-    
+    pipeline()
 }
 
 workflow.onComplete {
