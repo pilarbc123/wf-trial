@@ -85,6 +85,8 @@ process output {
 
 process readuntil {
     
+    conda 'environment.yml'
+    
     script:
 
     """
