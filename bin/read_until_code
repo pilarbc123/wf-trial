@@ -9,6 +9,8 @@ def analysis(client, *args, **kwargs):
     while client.is_running:
         for channel, read in client.get_read_chunks():
             raw_data = numpy.fromstring(read.raw_data, client.signal_dtype)
+            read.raw_data = read_until.NullRaw
+            print(read.raw_data)
             client.stop_receiving_read(channel, read.number)
             client.unblock_read(channel, read.number)
  
