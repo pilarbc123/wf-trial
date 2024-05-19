@@ -86,9 +86,9 @@ process output {
 process readuntil {
     
     script:
-    
+
     """
-    read_until
+    helloworld
     
     """
 }
