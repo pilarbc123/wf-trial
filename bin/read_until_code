@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-import sys
-print(sys.executable)
+#!/usr/bin/python3
 
 from concurrent.futures import ThreadPoolExecutor
 import numpy
