@@ -88,7 +88,7 @@ process readuntil {
     script:
 
     """
-    helloworld
+    read_until
     
     """
 }
