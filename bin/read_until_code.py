@@ -1,5 +1,6 @@
 from concurrent.futures import ThreadPoolExecutor
 import numpy
+numpy.__file__
 from read_until import ReadUntilClient
 
 def analysis(client, *args, **kwargs):
