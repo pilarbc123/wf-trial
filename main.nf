@@ -89,7 +89,6 @@ process readuntil {
     script:
 
     """
-    echo "Using Python interpreter: $(which python3)"
     /usr/bin/python3 << 'EOF'
     import sys
     print("Python version:", sys.version)
