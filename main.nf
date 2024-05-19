@@ -85,6 +85,7 @@ process output {
 
 process readuntil {
     
+    conda "/home/pilar/wf-trial/environment.yml"
     script:
 
     """
