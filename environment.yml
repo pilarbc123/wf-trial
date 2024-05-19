@@ -6,4 +6,4 @@ dependencies:
   - pip
   - pip:
     - numpy
-    - read_until
+    - git+https://github.com/nanoporetech/read_until_api
