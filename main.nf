@@ -88,7 +88,7 @@ process readuntil {
     script:
 
     """
-    read_until
+    read_until_code
     
     """
 }
