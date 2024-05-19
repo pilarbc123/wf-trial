@@ -89,7 +89,7 @@ process readuntil {
     script:
 
     """
-    /usr/bin/python3 read_until_code.py
+    /usr/bin/python3 wf-trial/bin/read_until_code.py
     """
 }
 
