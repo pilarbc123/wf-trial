@@ -85,11 +85,12 @@ process output {
 
 process readuntil {
     
-    
+    conda "environment.yml"
     script:
 
     """
-    /usr/bin/python3 /home/pilar/wf-trial/bin/read_until_code.py
+    read_until_code
+    
     """
 }
 
