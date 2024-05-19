@@ -89,7 +89,12 @@ process readuntil {
     script:
 
     """
+    echo "Using Python interpreter: $(which python3)"
     /usr/bin/python3 << 'EOF'
+    import sys
+    print("Python version:", sys.version)
+    print("Python executable:", sys.executable)
+    print("sys.path:", sys.path)
     from concurrent.futures import ThreadPoolExecutor
     import numpy
     from read_until import ReadUntilClient
