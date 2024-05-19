@@ -2,7 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 import numpy
-numpy.__file__
+print(numpy.__file__)
 
 from read_until import ReadUntilClient
 
