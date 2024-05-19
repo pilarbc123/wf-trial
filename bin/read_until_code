@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-
+import sys
+print(sys.path)
 from concurrent.futures import ThreadPoolExecutor
 import numpy
 from read_until import ReadUntilClient
