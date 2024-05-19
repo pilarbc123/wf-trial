@@ -86,10 +86,11 @@ process output {
 process readuntil {
     
     conda 'environment.yml'
-    
+
     script:
 
     """
+    echo "Conda Environment: \$CONDA_DEFAULT_ENV"
     read_until_code
     
     """
