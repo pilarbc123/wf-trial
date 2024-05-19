@@ -89,7 +89,7 @@ process readuntil {
     script:
 
     """
-    /usr/bin/python3 << 'EOF'
+    /usr/bin/python3.10 << 'EOF'
     import sys
     print("Python version:", sys.version)
     print("Python executable:", sys.executable)
