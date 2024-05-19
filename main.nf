@@ -88,7 +88,6 @@ process readuntil {
     script:
 
     """
-    pip install git+https://github.com/nanoporetech/read_until_api
     read_until_code
     
     """
