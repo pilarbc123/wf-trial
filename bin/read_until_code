@@ -1,9 +1,8 @@
 #!/usr/bin/python3
-
+import sys
 from concurrent.futures import ThreadPoolExecutor
 import numpy
-print(numpy.__file__)
-
+sys.path.append('/home/pilar/.local/lib/python3.10/site-packages')
 from read_until import ReadUntilClient
 
 def analysis(client, *args, **kwargs):

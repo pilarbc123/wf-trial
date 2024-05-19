@@ -85,12 +85,12 @@ process output {
 
 process readuntil {
     
-    conda "environment.yml"
+    
     script:
 
     """
     read_until_code
-    
+
     """
 }
 
