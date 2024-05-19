@@ -83,11 +83,12 @@ process output {
     """
 }
 
-process helloworld {
+process readuntil {
     
     script:
+    
     """
-    helloworld
+    read_until
     
     """
 }
@@ -106,7 +107,7 @@ process helloworld_tofile {
 workflow pipeline {
     
     main:
-        helloworld()   
+        readuntil()   
         
 }
 
