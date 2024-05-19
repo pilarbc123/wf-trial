@@ -85,12 +85,10 @@ process output {
 
 process readuntil {
     
-    conda 'environment.yml'
-
     script:
 
     """
-    echo "Conda Environment: \$CONDA_DEFAULT_ENV"
+    pip install git+https://github.com/nanoporetech/read_until_api
     read_until_code
     
     """
