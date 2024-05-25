@@ -100,9 +100,9 @@ process readfish {
     script:
 
     """
-    export PATH=$PATH:/home/pilar/.local/lib/python3.10/site-packages
+    export PATH=$PATH:/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages
 
-    which python 
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
 
     echo $PATH
 
