@@ -100,10 +100,12 @@ process readfish {
     script:
 
     """
-    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/')"
+    export PATH=$PATH:/home/pilar/.local/lib/python3.10/site-packages
 
     which python 
-    
+
+    echo $PATH
+
     readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
 
     """
