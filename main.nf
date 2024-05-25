@@ -94,6 +94,17 @@ process readuntil {
     """
 }
 
+process readfish {
+    script:
+
+    """
+    conda "/home/pilar/miniconda3/envs/readfish"
+
+    readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
+
+    """
+
+}
 process helloworld_tofile {
     output:
         path "output.txt"
@@ -108,7 +119,7 @@ process helloworld_tofile {
 workflow pipeline {
     
     main:
-        readuntil()   
+        readfish()   
         
 }
 
