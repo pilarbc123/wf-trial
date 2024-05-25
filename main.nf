@@ -102,6 +102,8 @@ process readfish {
     """
     python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/')"
 
+    which python 
+    
     readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
 
     """
