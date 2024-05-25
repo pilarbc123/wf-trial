@@ -100,8 +100,8 @@ process readfish {
     script:
 
     """
-    python -c "sys.path.insert(0,"/home/pilar/miniconda3/envs/readfish/")"
-    
+    python -c "sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/')"
+
     readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
 
     """
