@@ -95,11 +95,10 @@ process readuntil {
 }
 
 process readfish {
+    conda "/home/pilar/miniconda3/envs/readfish"
     script:
 
     """
-    conda "/home/pilar/miniconda3/envs/readfish"
-
     readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
 
     """
