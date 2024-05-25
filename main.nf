@@ -94,38 +94,40 @@ process readuntil {
     """
 }
 
-process readfish {
+process readfish_unblockall {
 
     conda "/home/pilar/miniconda3/envs/readfish"
     script:
 
     """
-    export PATH=$PATH:/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages
 
     python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
 
-    echo $PATH
-
     readfish unblock-all --device MS00000 --experiment-name "Testing readfish Unblock All"
-
     """
 
 }
-process helloworld_tofile {
-    output:
-        path "output.txt"
 
+process readfish_enrich20_21 {
+
+    conda "/home/pilar/miniconda3/envs/readfish"
     script:
 
     """
-    python -c "print('Hello world')" >> output.txt
+
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
+
+    readfish targets --toml /home/pilar/wf-trial/human_chr_selection.toml  --device MS00000 --log-file /home/pilar/work/test.log --experiment-name human_select_test
+
     """
+
 }
+
 // workflow module
 workflow pipeline {
     
     main:
-        readfish()   
+        readfish_enrich20_21()   
         
 }
 
