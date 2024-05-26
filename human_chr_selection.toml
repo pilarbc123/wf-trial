@@ -16,7 +16,7 @@
 # https://looselab.github.io/readfish/toml.html
 
 # Basecaller configuration
-[caller_settings.dorado]
+[caller_settings.guppy]
 #               ^^^^^^ - ".guppy" specifies our chosen basecaller
 #               If using dorado >7.3.9, this should be ".dorado".
 #               All other parameters are shared between the two basecallers.
