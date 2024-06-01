@@ -26,6 +26,7 @@ config = "dna_r9.4.1_450bps_fast"
 address = "ipc:///tmp/.guppy/5555"
 # Fastq output for individual reads. This is OPTIONAL - as these files can become quite large.
 # Remove line to disable.
+debug_log = "live_reads.fq"
 
 # Aligner Configuration
 [mapper_settings.mappy]
