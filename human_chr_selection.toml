@@ -37,7 +37,7 @@ fn_idx_in = "/scratch/Backup/data/mmi_idx/hg38.mmi"
 # Remove line to disable.
 debug_log = "/home/pilar/work/readfish_out/live_alignments.paf"
 # Number of threads for indexing (mappy and mappy-rs) and mapping (mappy-rs only)
-n_threads = 4
+#n_threads = 4
 
 # Region Configuration - see https://looselab.github.io/readfish/toml.html#analysis-regions for more information.
 # Definitions of "unblock", "proceed" and "stop_receivings" are as follows
