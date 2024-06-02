@@ -26,7 +26,7 @@ config = "dna_r9.4.1_450bps_fast"
 address = "ipc:///tmp/.guppy/5555"
 # Fastq output for individual reads. This is OPTIONAL - as these files can become quite large.
 # Remove line to disable.
-debug_log = "live_reads.fq"
+debug_log = "/home/pilar/work/readfish_out/live_reads.fq"
 
 # Aligner Configuration
 [mapper_settings.mappy]
@@ -35,7 +35,7 @@ debug_log = "live_reads.fq"
 fn_idx_in = "/scratch/Backup/data/mmi_idx/hg38.mmi"
 # Optional PAF output for live alignments.
 # Remove line to disable.
-debug_log = "live_alignments.paf"
+debug_log = "/home/pilar/work/readfish_out/live_alignments.paf"
 # Number of threads for indexing (mappy and mappy-rs) and mapping (mappy-rs only)
 n_threads = 4
 
