@@ -85,11 +85,12 @@ process output {
 
 process readuntil {
     
-    
+    conda "/home/pilar/miniconda3/envs/readfish"
     script:
 
     """
-    read_until_code
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
+    readfish validate /home/pilar/wf-trial/human_chr_selection.toml
 
     """
 }
@@ -108,7 +109,12 @@ process readfish_unblockall {
 
 }
 
-process readfish_enrich20_21 {
+process readfish_enrich1_20_21 {
+
+    echo true
+
+    output:
+    val ""
 
     conda "/home/pilar/miniconda3/envs/readfish"
     script:
@@ -117,27 +123,144 @@ process readfish_enrich20_21 {
 
     python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
 
-    readfish targets --toml /home/pilar/wf-trial/human_chr_selection.toml  --device MS00000 --log-file /home/pilar/work/test.log --experiment-name human_select_test
+    readfish targets --toml /home/pilar/wf-trial/human_chr_selection.toml  --device MS00000 --log-file test.log --experiment-name human_selection 
+
+    """
+
+}
+
+process create_hash_table_human {
+
+    echo true 
+
+    input:
+    val ""
+    output:
+    val ""
+
+    conda "/home/pilar/miniconda3/envs/readfish"
+    script:
+
+    """
+
+    bash create_hash_table.sh /home/pilar/wf-trial/fastq_files_human
+
+    """
+
+}
+
+
+
+process stats_run_human {
+
+    echo true
+    input:
+    val ""
+
+    conda "/home/pilar/miniconda3/envs/readfish"
+    script:
+
+    """
+
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
+
+    readfish stats --toml /home/pilar/wf-trial/human_chr_selection.toml --fastq-directory /home/pilar/wf-trial/fastq_stats/ --no-paf-out --no-demultiplex
+
+    """
+
+}
+
+
+process readfish_enrich_ecoli {
+
+    echo true
+
+    output:
+    val ""
+
+    conda "/home/pilar/miniconda3/envs/readfish"
+    script:
+
+    """
+
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
+
+    readfish targets --toml /home/pilar/wf-trial/bern_selection.toml  --device MS00000 --log-file test.log --experiment-name ecoli_selection 
+
+    """
+
+}
+
+process create_hash_table_ecoli {
+
+    echo true 
+
+    input:
+    val ""
+    output:
+    val ""
+
+    conda "/home/pilar/miniconda3/envs/readfish"
+    script:
+
+    """
+
+    bash create_hash_table.sh /home/pilar/wf-trial/fastq_files_bern
+
+    """
+
+}
+
+
+
+process stats_run_ecoli {
+
+    echo true
+    input:
+    val ""
+
+    conda "/home/pilar/miniconda3/envs/readfish"
+    script:
+
+    """
+
+    python -c "import sys ; sys.path.insert(0,'/home/pilar/miniconda3/envs/readfish/lib/python3.10/site-packages')"
+
+    readfish stats --toml /home/pilar/wf-trial/bern_selection.toml --fastq-directory /home/pilar/wf-trial/fastq_stats/ --no-paf-out --no-demultiplex
 
     """
 
 }
 
 // workflow module
-workflow pipeline {
+workflow pipeline_human {
     
     main:
-        readfish_enrich20_21()   
+        readfish_enrich1_20_21()
+        create_hash_table_human(readfish_enrich1_20_21.out.collect() )
+        stats_run_human(create_hash_table_human.out.collect())
+        
+
         
 }
 
+workflow pipeline_bern {
+    
+    main:
+        readfish_enrich_ecoli()
+        create_hash_table_ecoli(readfish_enrich_ecoli.out.collect() )
+        stats_run_ecoli(create_hash_table_ecoli.out.collect())
+        
+
+        
+}
 
 // entrypoint workflow
 WorkflowMain.initialise(workflow, params, log)
 workflow {
 
     Pinguscript.ping_start(nextflow, workflow, params)
-    pipeline()
+    pipeline_bern()
 }
 
 workflow.onComplete {

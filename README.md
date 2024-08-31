@@ -1,188 +1,104 @@
-# Template workflow
+# Contents for readfish
 
-Nextflow workflow template repository.
+The contents of wf-trial are:
+- **benchmarking**: Contains the readfish repository in a past version, where readfish align was still in use. This allows to do live yield enrichment for the bern dataset (currently not running)
+    - readfish_benchmarking.yml: File to create the conda environment required to run reasfish in the past commit. The user should create the enviromnent using this yml file and activate it when running _readfish align_. 
+    - readfish: Folder containing past commit of readfish. The user should go inside of this folder and run _readfish align_. To run readfish align:
+    
+    ```
+    readfish align --device MS00000 --experiment-name "add_desired_name" --toml path_to_toml
+    ```
+    One can check the help for optional commands:
+    ```
+    readfish align --help
+    ```
+- **bern_selection.toml**: Toml file required to run enrichment of bern dataset. The user should change the _targets_ variable and add between quotes the names of the organisms they want to enrich for. If one wants to do depletion, the conditions of unblock and proceed should be changed (see toml file with conditions for depletion in https://github.com/LooseLab/readfish/tree/main/docs/_static/example_tomls and file human_chr_depletion.toml). See the possible target names in the [bern target section](#bern-data-reference-file-possible-targets).
 
+    To run the experiment with this toml file the user should use the code below while a simulated run is active in MinKnow.
 
+    ```
+    guppy_basecall_server --config dna_r10.4.1_e8.2_400bps_5khz_hac.cfg --port 5555 --log_path . -x cuda:all
+    readfish validate bern_selection.toml
+    readfish targets --toml /home/pilar/wf-trial/bern_selection.toml  --device MS00000 --log-file test.log --experiment-name experiment_name
+    ```
 
-## Introduction
+    **Outputs**
 
-<!---This section of documentation typically contains a list of things the workflow can perform also any other intro.--->
+    - fastq_files_bern: Folder containing the basecalled reads. 
+        1. *live_reads.fastq*: Basecalled reads. The user should keep it if they want to run *readfish stats* for benchmarking. 
 
-This workflow is not intended to be used by end users.
+- **human_chr_selection.toml**: Toml file for running enrichment of human data. The user should change the _targets_ variable and add between quotes the names of the chromosomes they want to enrich for. If one wants to do depletion, the conditions of unblock and proceed should be changed (see toml file with conditions for depletion in https://github.com/LooseLab/readfish/tree/main/docs/_static/example_tomls and file human_chr_depletion.toml).
 
-This workflow can be used for the following:
+    To run the experiment with this toml file the user should use the code below while a simulated run is active in MinKnow.
 
-+ As a template using gitlabs create project from template.
-+ For testing of any scripts that are the same across workflows such as scripts in the lib directory.
+    ```
+    guppy_basecall_server --config dna_r10.4.1_e8.2_400bps_5khz_hac.cfg --port 5555 --log_path . -x cuda:all
+    readfish validate human_chr_selection.toml
+    readfish targets --toml /home/pilar/wf-trial/human_chr_selection.toml  --device MS00000 --log-file test.log --experiment-name human_selection
+    ``` 
+    **Outputs**
 
+    - fastq_files_human: Folder containing the basecalled reads. 
+        1. *live_reads.fastq*: Basecalled reads. The user should keep it if they want to run *readfish stats* for benchmarking. 
 
+- **ny_suggestion.toml**: File suggesting the next steps for the New York data (might need some tunning depending on the desired output).
 
-## Compute requirements
+    In this file two regions are defined:
+    1. ny_test_readfish: It enriches for ecoli in the left side of the flow cell.
+    2. no_action: It sequences everything in the left side of the flow cell.
 
-Recommended requirements:
+    *Considerations:*
+    - The user will need to check if the reference genomes match the ones from the NY dataset. The reference genomes used in this case were obtained from the official documentation of the company.
+    - The user will need to change the enrichment targets to match the sequencing conditions
+    - The user might need to adjust the regions where the no_action and enrichment take place.
 
-+ CPUs = 2
-+ Memory = 2GB
+- **create_hash_table.sh**: This contains the trial code for the creation of the hash table. It takes as an input the folder where the basecalled reads are stored, in our case either *fastq_files_bern* or *fastq_files_human*. It is required to be able to run the becnchmarking module of readfish *readfish stats*. It is run as follows:
 
-Minimum requirements:
+    ```
+    bash create_hash_table.sh name_of_folder
+    ```
 
-+ CPUs = 2
-+ Memory = 2GB
+    The code first takes the output of *readfish targets* and obtain the run names. It outputs a file called *reads_header.txt* located within the provided folder. Then, it creates the hash table from the unique read headers, and stores it in *hash_table_reads.txt* in that same folder. Finally, it updates the basecalled reads with the read_id in the header, and stores the file in *fastq_stats/live_reads_readid.fq*.
 
-Approximate run time: 5 minutes per sample
 
-ARM processor support: True
+## Bern data reference file: Possible targets
 
+First the species is shown and then the names of the possible targets as appearing in the merged reference fasta file stored in: /scratch/Backup/data/mmi_idx/D6322.refseq/Genomes/merge_genomes.
 
+One should add the desired target names in the target field of the toml files between quotes.
 
+- Bacillus subtilis: Bacillus_subtilis
+- Escherichia coli: Escherichia_coli_plasmid, Escherichia_coli_chromosome
+- Pseudomonas aeruginosa: Pseudomonas_aeruginosa
+- Salmonella enterica: Salmonella_enterica
+- Enterococcus faecalis: Enterococcus_faecalis
+- Listeria monocytogenes: Listeria_monocytogenes
+- Saccharomyces cerevisiae: tig00000001, tig00000003, tig00000004, tig00000006, tig00000011, tig00000018, tig00000019, tig00000023, tig00000025, tig00000027, tig00000031, tig00000036, tig00000038, tig00000042, tig00000047, tig00000050 ,tig00000051, tig00000054, tig00000055 , tig00000063 , tig00000069, tig00000071 , tig00000072 , tig00000075 , tig00000078 , tig00000079 , tig00000080 , tig00000086, tig00000091, tig00000093, tig00000094, tig00000096, tig00000104, tig00000105, tig00000109, tig00000114, tig00000123, tig00000125, tig00000128, tig00000132, tig00000134, tig00000136, tig00000139, tig00000140, tig00000161, tig00000163, tig00000172, tig00000304, tig00000306, tig00000307, tig00000308
+- Staphylococcus_aureus: Staphylococcus_aureus_chromosome, Staphylococcus_aureus_plasmid1, Staphylococcus_aureus_plasmid2, Staphylococcus_aureus_plasmid3
 
-## Install and run
+# Contents for readfish integration with epi2me
 
-<!---Nextflow text remains the same across workflows, update example cmd and demo data sections.--->
-These are instructions to install and run the workflow on command line. You can also access the workflow via the [EPI2ME application](https://labs.epi2me.io/downloads/).
+- **main.nf**: Main epi2me code. Here one can create workflows and pipelines that will be performed by Epi2Me. In this file, there are two main workflows: *pipeline_human* and *pipeline_bern*.
+    - *pipeline_human*: It performs the enrichment of the selected chromosomes in the human toml file described above. It then creates the hash table and add the read ids to the output, and finally call readfish stats and display a table for benchmarking of the selection.
+    - *pipeline_bern*:  It performs the enrichment of the selected species in the bern toml file described above. It then creates the hash table and add the read ids to the output, and finally call readfish stats and display a table for benchmarking of the selection.
 
-The workflow uses [Nextflow](https://www.nextflow.io/) to manage compute and software resources, therefore nextflow will need to be installed before attempting to run the workflow.
+    The user should select in the main workflow the pipeline that they want to run. Then, they should launch the Epi2Me workflow by running:
 
-The workflow can currently be run using either [Docker](https://www.docker.com/products/docker-desktop) or
-[Singularity](https://docs.sylabs.io/guides/3.0/user-guide/index.html) to provide isolation of
-the required software. Both methods are automated out-of-the-box provided
-either docker or singularity is installed. This is controlled by the [`-profile`](https://www.nextflow.io/docs/latest/config.html#config-profiles) parameter as exemplified below.
+    ```
+    export PATH=$PATH:/home/pilar/utils/
+    nextflow run main.nf -profile local
+    ```
 
-It is not required to clone or download the git repository in order to run the workflow.
-More information on running EPI2ME workflows can be found on our [website](https://labs.epi2me.io/wfindex).
+    This will launch the epi2me workflow that will run the *readfish targets* and output the stats.
 
-The following command can be used to obtain the workflow. This will pull the repository in to the assets folder of nextflow and provide a list of all parameters available for the workflow as well as an example command:
+- **bin**: Folder containing some codes used in epi2me. For being able to directly call codes from the main nextflow file _main.nf_, the code should be located in this folder.
+    - **create_hash_table.sh**: Code required to create a hash table from readfish targets output, so that _readfish stats_ works on the output data. This is the code used in the pipelines contained in _main.nf_.
+    - **read_until_code.py**: Code used to test the read until api integration with epi2me. This is a simple code where the server connects to the MinKnow device in real time and unblocks all the reads.
 
-```
-nextflow run epi2me-labs/wf-template –help
-```
-A demo dataset is provided for testing of the workflow. It can be downloaded using:
-```
-wget https://ont-exd-int-s3-euwst1-epi2me-labs.s3.amazonaws.com/wf-template/wf-template-demo.tar.gz
-tar -xzvf wf-template-demo.tar.gz
-```
-The workflow can be run with the demo data using:
-```
-nextflow run epi2me-labs/wf-template \
---fastq wf-template-demo/test_data/reads.fastq.gz \
--profile standard
-```
-For further information about running a workflow on the cmd line see https://labs.epi2me.io/wfquickstart/
+- **nextflow.config**: Configuration file required in Epi2Me. One can define here the use of docker containers or singularity, amongst others.
 
+- **nextflow_schema.json**: File used to define parameters required to run the workflow, and shown in the Epi2Me user interface. In this schema no fields are required. However, one could add fields like toml file or device name so that the user can easily introduce them in the user interface and pass them to Epi2Me in an easy wy, rather than manually editting them in main.nf. 
 
-
-
-## Related protocols
-
-<!---Hyperlinks to any related protocols that are directly related to this workflow, check the community for any such protocols.--->
-
-This workflow is designed to take input sequences that have been produced from [Oxford Nanopore Technologies](https://nanoporetech.com/) devices.
-
-Find related protocols in the [Nanopore community](https://community.nanoporetech.com/docs/).
-
-
-
-## Input example
-
-<!---Example of input directory structure, delete and edit as appropriate per workflow.--->
-This workflow accepts either FASTQ or BAM files as input.
-
-The FASTQ or BAM input parameters for this workflow accept one of three cases: (i) the path to a single FASTQ or BAM file; (ii) the path to a top-level directory containing FASTQ or BAM files; (iii) the path to a directory containing one level of sub-directories which in turn contain FASTQ or BAM files. In the first and second cases (i and ii), a sample name can be supplied with `--sample`. In the last case (iii), the data is assumed to be multiplexed with the names of the sub-directories as barcodes. In this case, a sample sheet can be provided with `--sample_sheet`.
-
-```
-(i)                     (ii)                 (iii)    
-input_reads.fastq   ─── input_directory  ─── input_directory
-                        ├── reads0.fastq     ├── barcode01
-                        └── reads1.fastq     │   ├── reads0.fastq
-                                             │   └── reads1.fastq
-                                             ├── barcode02
-                                             │   ├── reads0.fastq
-                                             │   ├── reads1.fastq
-                                             │   └── reads2.fastq
-                                             └── barcode03
-                                              └── reads0.fastq
-```
-
-
-
-## Input parameters
-
-### Input Options
-
-| Nextflow parameter name  | Type | Description | Help | Default |
-|--------------------------|------|-------------|------|---------|
-| fastq | string | FASTQ files to use in the analysis. | This accepts one of three cases: (i) the path to a single FASTQ file; (ii) the path to a top-level directory containing FASTQ files; (iii) the path to a directory containing one level of sub-directories which in turn contain FASTQ files. In the first and second case, a sample name can be supplied with `--sample`. In the last case, the data is assumed to be multiplexed with the names of the sub-directories as barcodes. In this case, a sample sheet can be provided with `--sample_sheet`. |  |
-| bam | string | BAM or unaligned BAM (uBAM) files to use in the analysis. | This accepts one of three cases: (i) the path to a single BAM file; (ii) the path to a top-level directory containing BAM files; (iii) the path to a directory containing one level of sub-directories which in turn contain BAM files. In the first and second case, a sample name can be supplied with `--sample`. In the last case, the data is assumed to be multiplexed with the names of the sub-directories as barcodes. In this case, a sample sheet can be provided with `--sample_sheet`. |  |
-| analyse_unclassified | boolean | Analyse unclassified reads from input directory. By default the workflow will not process reads in the unclassified directory. | If selected and if the input is a multiplex directory the workflow will also process the unclassified directory. | False |
-| watch_path | boolean | Enable to continuously watch the input directory for new input files. | This option enables the use of Nextflow’s directory watching feature to constantly monitor input directories for new files. | False |
-| fastq_chunk | integer | Sets the maximum number of reads per chunk returned from the data ingress layer. | Default is to not chunk data and return a single FASTQ file. |  |
-
-
-### Sample Options
-
-| Nextflow parameter name  | Type | Description | Help | Default |
-|--------------------------|------|-------------|------|---------|
-| sample_sheet | string | A CSV file used to map barcodes to sample aliases. The sample sheet can be provided when the input data is a directory containing sub-directories with FASTQ files. | The sample sheet is a CSV file with, minimally, columns named `barcode` and `alias`. Extra columns are allowed. A `type` column is required for certain workflows and should have the following values; `test_sample`, `positive_control`, `negative_control`, `no_template_control`. |  |
-| sample | string | A single sample name for non-multiplexed data. Permissible if passing a single .fastq(.gz) file or directory of .fastq(.gz) files. |  |  |
-
-
-### Output Options
-
-| Nextflow parameter name  | Type | Description | Help | Default |
-|--------------------------|------|-------------|------|---------|
-| out_dir | string | Directory for output of all workflow results. |  | output |
-
-
-
-
-
-
-## Outputs
-
-Output files may be aggregated including information for all samples or provided per sample. Per-sample files will be prefixed with respective aliases and represented below as {{ alias }}.
-
-| Title | File path | Description | Per sample or aggregated |
-|-------|-----------|-------------|--------------------------|
-| workflow report | ./wf-template-report.html | Report for all samples | aggregated |
-| Per file read stats | ./fastq_ingress_results/reads/fastcat_stats/per-file-stats.tsv | A TSV with per file read stats, including all samples. | aggregated |
-| Per read stats | ./fastq_ingress_results/reads/fastcat_stats/per-read-stats.tsv | A TSV with per read stats, including all samples. | aggregated |
-| Run ID's | ./fastq_ingress_results/reads/fastcat_stats/run_ids | List of run ID's present in reads. | aggregated |
-| Meta map json | ./fastq_ingress_results/reads/metamap.json | Meta data used in workflow presented in a JSON. | aggregated |
-| Concatenated sequence data | ./fastq_ingress_results/reads/{{ alias }}.fastq.gz | Per sample reads concatenated in to one fastq file. | per-sample |
-
-
-
-
-## Pipeline overview
-
-<!---High level numbered list of main steps of the workflow and hyperlink to any tools used. If multiple workflows/different modes perhaps have subheadings and numbered steps. Use nested numbering or bullets where required.--->
-### 1. Concatenates input files and generate per read stats.
-
-The [fastcat/bamstats](https://github.com/epi2me-labs/fastcat) tool is used to concatenate multifile samples to be processed by the workflow. It will also output per read stats including average read lengths and qualities.
-
-
-
-## Troubleshooting
-
-<!---Any additional tips.--->
-+ If the workflow fails please run it with the demo data set to ensure the workflow itself is working. This will help us determine if the issue is related to the environment, input parameters or a bug.
-+ See how to interpret some common nextflow exit codes [here](https://labs.epi2me.io/trouble-shooting/).
-
-
-
-## FAQ's
-
-<!---Frequently asked questions, pose any known limitations as FAQ's.--->
-
-If your question is not answered here, please report any issues or suggestions on the [github issues](https://github.com/epi2me-labs/wf-template/issues) page or start a discussion on the [community](https://community.nanoporetech.com/).
-
-
-
-## Related blog posts
-
-+ [Importing third-party workflows into EPI2ME Labs](https://labs.epi2me.io/nexflow-for-epi2melabs/)
-
-See the [EPI2ME website](https://labs.epi2me.io/) for lots of other resources and blog posts.
-
+- **output_definition.json**: File to define the output of the Epi2Me workflow.
 
 
